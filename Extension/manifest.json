@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "name": "XwWebDev",
+    "version": "1.0.0",
+    "description": "Web Developer tool: Add, change or remove headers on your requests.",
+    "background": { "service_worker": "background.js" },
+
+    "permissions": [ "storage", "scripting", "declarativeNetRequest" ],
+    "host_permissions": ["*://*/*", "<all_urls>"],
+    
+    "options_ui": 
+    {
+        "open_in_tab": true,
+        "page": "options.html"
+    },
+
+    "action": 
+    {
+        "default_title": "XwWebDev",
+        "default_icon": 
+        {
+            "16": "images/off16x.png",
+            "32": "images/off32x.png",
+            "48": "images/off48x.png",
+            "128": "images/off128x.png"
+        }
+    },
+    "icons": 
+    {
+        "16": "images/on16x.png",
+        "32": "images/on32x.png",
+        "48": "images/on48x.png",
+        "128": "images/on128x.png"
+    }
+    
+}

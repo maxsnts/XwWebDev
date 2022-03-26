@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <title>XwWebDev</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="extension.css" />
+        <script src='jquery-3.6.0.min.js'></script>
+        <script src='options.js'></script>
+    </head>
+    <body>
+        <div class="content">
+            <div style="display: flex">
+                <div style="width: 600px">
+                    <h1 style="display: flex; align-items: center;"><img src="images/on48x.png">&nbsp;XwWebDev&nbsp;options</h1>
+                </div>
+                <div style="width: 100%;"></div>
+                <div style="width: 200px;display: flex; align-items: center;">
+                    <a href="https://www.paypal.me/maxsnts", target="blank"><img src="https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_pp_142x27.png"></a>
+                </div>
+            </div>
+            <div>For now it does only one thing: Request header modification/injection</div>            
+            <hr>
+            <span class="title">Request header modification</span>
+            <a style="float:right" href="#" id="NewHeaderRow">Add new header modification</a>
+            <table id="HeaderTable" class="grid" style="text-align: center">
+                <tr>
+                    <th style="width: 50px;">Active</th>
+                    <th style="width: 100px;">Action</th>
+                    <th style="width: 200px;">Header name</th>
+                    <th style="width: 350px;">Header value</th>
+                    <th style="width: 350px;">Apply header to URL (urlFilter)</th>
+                    <th style="width: 50px;">Delete?</th>
+                </tr>
+            </table>
+            
+            <div style="height: 100px"></div>       
+
+            
+            <hr>
+            <div class="title">Instructions / Help</div>
+            <table class="grid">
+                <tr>
+                    <th>urlFilter</th>
+                    <th>Matches</th>
+                    <th>Does not match</th>
+                </tr>
+                <tr>
+                    <td>abc</td>
+                    <td>https://abcd.com <br> https://example.com/abcd</td>
+                    <td>https://ab.com</td>
+                </tr>
+                <tr>
+                    <td>abc*d</td>
+                    <td>https://abcd.com <br> https://example.com/abcxyzd</td>
+                    <td>https://abc.com</td>
+                </tr>
+                <tr>
+                    <td>||a.example.com</td>
+                    <td>https://a.example.com/ <br> https://b.a.example.com/xyz</td>
+                    <td>https://example.com/</td>
+                </tr>
+                <tr>
+                    <td>|https*</td>
+                    <td>https://example.com</td>
+                    <td>http://example.com/ <br> http://https.com</td>
+                </tr>
+                <tr>
+                    <td>example*^123|</td>
+                    <td>https://example.com/123 <br> http://abc.com/example?123</td>
+                    <td>https://example.com/1234 <br> https://abc.com/example0123</td>
+                </tr>
+            </table>
+
+
+
+            <div style="height: 20px"></div>
+
+            
+            <hr>
+            <div class="title">Atributions & Credits</div>
+            <a href="https://www.flaticon.com/free-icons/software-development" target="blank" title="software development icons">Software development icons created by Freepik - Flaticon</a>
+        </div>
+    </body>
+</html>

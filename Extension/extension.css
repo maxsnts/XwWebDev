@@ -1,0 +1,56 @@
+*           { box-sizing: border-box; outline: none; }
+html        { overflow: -moz-scrollbars-vertical; margin-top: 10px; color:#555555;
+                -moz-user-select: none; 
+                -webkit-user-select: none; 
+                -ms-user-select:none; 
+                user-select:none;
+                -o-user-select:none;}
+
+                body		{ font:13px Verdana,Tahoma,Helvetica; background-color:#DDDDDD; }
+table		{ font:13px Verdana,Tahoma,Helvetica; color:#555555;margin: auto; width: 100% }
+hr 			{ border: 0px;background-color:#AAAAAA; height:3px;margin-left: 0px; margin-right: 0px; }
+
+a           {color: cornflowerblue ; text-decoration: none}
+a.hover     {color: cornflowerblue}
+
+.content {
+    margin: auto;
+    width: 1000px;
+}
+
+.title {
+    font-size: 14px;
+    font-weight: bold
+}
+
+.grid {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    text-align: left;
+    font-family: Verdana,Tahoma,Helvetica;
+    font-size: 11px;
+    border-collapse: collapse;
+    border-Color: #BBBBBB;
+    border-style: solid;
+    border-width: 1px;
+}
+       
+.grid th {
+    font-weight: bold;
+    border-collapse: collapse;
+    border-color: #999999;
+    border-style: solid;
+    border-width: 1px;
+    background-color: #BBBBBB;
+    font-weight: bold;
+}
+
+.grid td {
+    border-collapse: collapse;
+    border-color: #999999;
+    background-color: #DDDDDD;
+    border-style: solid;
+    border-width: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
