@@ -1,11 +1,11 @@
 {
     "manifest_version": 3,
     "name": "XwWebDev",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "Web Developer tool: Add, change or remove headers on your requests.",
     "background": { "service_worker": "background.js" },
 
-    "permissions": [ "storage", "scripting", "declarativeNetRequest" ],
+    "permissions": [ "storage", "declarativeNetRequest" ],
     "host_permissions": ["*://*/*", "<all_urls>"],
     
     "options_ui": 
