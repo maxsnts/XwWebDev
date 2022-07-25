@@ -6,9 +6,16 @@ chrome.runtime.onInstalled.addListener(() =>
 });
 
 //************************************************************************************************************
+chrome.runtime.onStartup.addListener(() =>
+{
+    console.log('XwWebDev Started!');
+    LoadOptions();
+});
+
+//************************************************************************************************************
 chrome.action.onClicked.addListener((tab) =>
 {
-    chrome.tabs.create({url:'options.html'});
+    chrome.runtime.openOptionsPage();
 });
 
 //************************************************************************************************************
@@ -36,6 +43,8 @@ function LoadOptions()
 //************************************************************************************************************
 function SetHeaderRules()
 {
+    console.log("Background SetHeaderRules...");
+
     chrome.declarativeNetRequest.getDynamicRules((headers) => 
     {
         chrome.declarativeNetRequest.updateDynamicRules(
@@ -64,6 +73,9 @@ function SetHeaderRules()
                     if (header.active !== true)
                         continue;
         
+                    if (header.name === "")
+                        continue;
+        
                     chrome.action.setIcon({
                         path: {
                             "16": "/images/on16x.png",
@@ -72,10 +84,7 @@ function SetHeaderRules()
                             "128": "/images/on128x.png"
                         }
                     });
-
-                    if (header.name === "")
-                        continue;
-        
+                    
                     //console.log(header);
                     if (header.action == "set")
                     {

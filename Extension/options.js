@@ -3,7 +3,7 @@ window.addEventListener("load", WindowLoaded);
 //************************************************************************************************************
 function WindowLoaded()
 {
-    console.log("Options UI open...");
+    console.log("Forground Open Options...");
     $("#NewHeaderRow").on("click",  AddNewHeaderRow.bind(false));
 
     LoadOptions();
@@ -103,15 +103,15 @@ function SaveOptions()
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => 
     {  
-        console.log('SaveOptions...');
+        console.log('Forground SaveOptions...');
         chrome.storage.local.set({ headers, headers} , () => {});
-    }, 1000);
+    }, 250);
 }
 
 //************************************************************************************************************
 function LoadOptions()
 {
-    console.log('LoadOptions...');
+    console.log('Forground LoadOptions...');
     
     chrome.storage.local.get(
     {
