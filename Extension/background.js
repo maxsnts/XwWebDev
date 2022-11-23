@@ -1,6 +1,4 @@
 
-var isActive = false;
-
 //************************************************************************************************************
 chrome.runtime.onInstalled.addListener(() => 
 {
@@ -25,7 +23,10 @@ chrome.action.onClicked.addListener((tab) =>
 //************************************************************************************************************
 chrome.storage.onChanged.addListener(function (changes, namespace) 
 {
-    LoadOptions();
+    if (changes.headers)
+    {
+        LoadOptions();
+    }
 });
 
 //************************************************************************************************************
@@ -42,12 +43,6 @@ function LoadOptions()
         settings = items;
         SetHeaderRules();
     });
-}
-
-//************************************************************************************************************
-function Test()
-{
-    console.log("ei");
 }
 
 //************************************************************************************************************
@@ -78,7 +73,7 @@ function SetHeaderRules()
                 }
             }, () => 
             {
-                isActive = false;
+                chrome.storage.local.set({ isActive: false } , () => {});
                 for (const header of settings.headers)
                 {
                     if (header.active !== true)
@@ -87,7 +82,7 @@ function SetHeaderRules()
                     if (header.name === "")
                         continue;
 
-                    isActive = true;
+                    chrome.storage.local.set({ isActive: true } , () => {});
 
                     chrome.action.setIcon(
                     {
@@ -181,45 +176,22 @@ function SetHeaderRules()
 //************************************************************************************************************
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) 
 {
-    console.log(isActive);
-    if (isActive)
+    chrome.storage.local.get(
     {
-        if(changeInfo.status == "loading") 
-        { 
-            chrome.scripting.executeScript(
-            {
-                target: { tabId: tab.id },
-                files: ['warning.js']
-            });
+        isActive: []
+    }, function(item) 
+    {
+        if (item.isActive === true)
+        {
+            if(changeInfo.status == "loading") 
+            { 
+                chrome.scripting.executeScript(
+                {
+                    target: { tabId: tab.id },
+                    files: ['warning.js']
+                });
+            }
         }
-    }
+    });
 });
-
-
-
-
-
-
-
-
-
-//************************************************************************************************************
-/*
-chrome.webNavigation.onBeforeNavigate.addListener((details) =>
-{
-    //console.log(details);
-});
-
-//************************************************************************************************************
-chrome.webNavigation.onErrorOccurred.addListener((details) =>
-{
-    //console.error(details);
-});
-
-//************************************************************************************************************
-chrome.webRequest.onErrorOccurred.addListener((details) =>
-{
-    //console.error(details);
-}, {urls: ["<all_urls>"]});
-*/
 
