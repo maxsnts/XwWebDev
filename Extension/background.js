@@ -1,3 +1,6 @@
+
+let isActive = false;
+
 //************************************************************************************************************
 chrome.runtime.onInstalled.addListener(() => 
 {
@@ -68,6 +71,7 @@ function SetHeaderRules()
                 }
             }, () => 
             {
+                isActive = false;
                 for (const header of settings.headers)
                 {
                     if (header.active !== true)
@@ -75,6 +79,8 @@ function SetHeaderRules()
         
                     if (header.name === "")
                         continue;
+
+                    isActive = true;
         
                     chrome.action.setIcon({
                         path: {
@@ -165,7 +171,24 @@ function SetHeaderRules()
     });
 }
 
-
+//************************************************************************************************************
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) 
+{
+    if (isActive)
+    {
+        if(changeInfo.status == "complete") 
+        {
+            console.log("chrome.tabs.onUpdated.addListener");
+            console.log(`Header are active: ${isActive}`);
+        
+            chrome.scripting.executeScript(
+            {
+                target: { tabId: tab.id },
+                files: ['warning.js']
+            });
+        }
+    }
+});
 
 
 

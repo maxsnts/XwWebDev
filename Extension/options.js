@@ -104,7 +104,7 @@ function SaveOptions()
     saveTimer = setTimeout(() => 
     {  
         console.log('Forground SaveOptions...');
-        chrome.storage.local.set({ headers, headers} , () => {});
+        chrome.storage.local.set({ headers, headers } , () => {});
     }, 250);
 }
 
