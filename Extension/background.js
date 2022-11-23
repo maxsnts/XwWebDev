@@ -1,5 +1,5 @@
 
-let isActive = false;
+var isActive = false;
 
 //************************************************************************************************************
 chrome.runtime.onInstalled.addListener(() => 
@@ -13,6 +13,7 @@ chrome.runtime.onStartup.addListener(() =>
 {
     console.log('XwWebDev Started!');
     LoadOptions();
+    chrome.declarativeNetRequest.setActionCountAsBadgeText(true);
 });
 
 //************************************************************************************************************
@@ -41,6 +42,12 @@ function LoadOptions()
         settings = items;
         SetHeaderRules();
     });
+}
+
+//************************************************************************************************************
+function Test()
+{
+    console.log("ei");
 }
 
 //************************************************************************************************************
@@ -81,9 +88,11 @@ function SetHeaderRules()
                         continue;
 
                     isActive = true;
-        
-                    chrome.action.setIcon({
-                        path: {
+
+                    chrome.action.setIcon(
+                    {
+                        path: 
+                        {
                             "16": "/images/on16x.png",
                             "32": "/images/on32x.png",
                             "48": "/images/on48x.png",
@@ -95,76 +104,74 @@ function SetHeaderRules()
                     if (header.action == "set")
                     {
                         chrome.declarativeNetRequest.updateDynamicRules(
-                            {
-                                addRules:
-                                [
+                        {
+                            addRules:
+                            [
+                                {
+                                    "id": header.index,
+                                    "priority": 1,
+                                    "action":  
                                     {
-                                        "id": header.index,
-                                        "priority": 1,
-                                        "action": 
-                                        {
-                                            "type": "modifyHeaders",
-                                            "requestHeaders": 
-                                            [
-                                                { "header": header.name, "operation": header.action, "value": header.value }
-                                            ]
-                                        },
-                                        "condition": { "urlFilter": header.url }
+                                        "type": "modifyHeaders",
+                                        "requestHeaders": 
+                                        [
+                                            { "header": header.name, "operation": header.action, "value": header.value }
+                                        ]
                                     },
+                                    "condition": { "urlFilter": header.url }
+                                },
+                                {
+                                    "id": (header.index + 100),
+                                    "priority": 2,
+                                    "action": 
                                     {
-                                        "id": (header.index + 100),
-                                        "priority": 2,
-                                        "action": 
-                                        {
-                                            "type": "modifyHeaders",
-                                            "requestHeaders": 
-                                            [
-                                                { "header": header.name, "operation": header.action, "value": header.value }
-                                            ]
-                                        },
-                                        "condition": { "urlFilter": header.url, resourceTypes: ["main_frame"] }
+                                        "type": "modifyHeaders",
+                                        "requestHeaders": 
+                                        [
+                                            { "header": header.name, "operation": header.action, "value": header.value }
+                                        ]
                                     },
-                                ]
-                            });
+                                    "condition": { "urlFilter": header.url, resourceTypes: ['main_frame', 'sub_frame'] }
+                                },
+                            ]
+                        });
                     }
         
                     if (header.action == "remove")
                     {
                         chrome.declarativeNetRequest.updateDynamicRules(
-                            {
-                                addRules:
-                                [
+                        {
+                            addRules:
+                            [
+                                {
+                                    "id": header.index,
+                                    "priority": 1,
+                                    "action": 
                                     {
-                                        "id": header.index,
-                                        "priority": 1,
-                                        "action": 
-                                        {
-                                            "type": "modifyHeaders",
-                                            "requestHeaders": 
-                                            [
-                                                { "header": header.name, "operation": header.action, }
-                                            ]
-                                        },
-                                        "condition": { "urlFilter": header.url }
+                                        "type": "modifyHeaders",
+                                        "requestHeaders": 
+                                        [
+                                            { "header": header.name, "operation": header.action }
+                                        ]
                                     },
+                                    "condition": { "urlFilter": header.url }
+                                },
+                                {
+                                    "id": (header.index + 100),
+                                    "priority": 2,
+                                    "action": 
                                     {
-                                        "id": (header.index + 2),
-                                        "priority": 2,
-                                        "action": 
-                                        {
-                                            "type": "modifyHeaders",
-                                            "requestHeaders": 
-                                            [
-                                                { "header": header.name, "operation": header.action, }
-                                            ]
-                                        },
-                                        "condition": { "urlFilter": header.url, resourceTypes: ["main_frame"] }
+                                        "type": "modifyHeaders",
+                                        "requestHeaders": 
+                                        [
+                                            { "header": header.name, "operation": header.action }
+                                        ]
                                     },
-                                ]
-                            });
-                    
+                                    "condition": { "urlFilter": header.url, resourceTypes: ['main_frame', 'sub_frame'] }
+                                },
+                            ]
+                        });
                     }
-        
                 }
             });
         });
@@ -174,13 +181,11 @@ function SetHeaderRules()
 //************************************************************************************************************
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) 
 {
+    console.log(isActive);
     if (isActive)
     {
-        if(changeInfo.status == "complete") 
-        {
-            console.log("chrome.tabs.onUpdated.addListener");
-            console.log(`Header are active: ${isActive}`);
-        
+        if(changeInfo.status == "loading") 
+        { 
             chrome.scripting.executeScript(
             {
                 target: { tabId: tab.id },

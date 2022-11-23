@@ -1,10 +1,11 @@
-console.log("warning.js loaded");
+window.addEventListener("load", WindowLoaded);
 
-
-//window.document.body.insertAdjacentHTML( "afterbegin", "<div style=' >XwWebDev Headers are On!</div>" );
-
-const elem = document.createElement('div');
-elem.className = '';
-elem.style.cssText = 'z-index:5000;position:fixed;top:0;left:0;right:0;padding:1px;background-color:violet;font-family:Courier New;font-weight:bold;font-size:12px;text-align:center;line-height:1.0';
-elem.innerHTML = 'XwWebDev Headers are On!'
-document.body.appendChild(elem);
+//************************************************************************************************************
+function WindowLoaded()
+{
+    const elem = document.createElement('div');
+    elem.className = '';
+    elem.style.cssText = 'z-index:5000;position:fixed;top:0;left:0;right:0;padding:1px;background-color:violet;font-family:Courier New;font-weight:bold;font-size:14px;text-align:center;line-height:1.0;color:black';
+    elem.innerHTML = 'XwWebDev header modification is ON!'
+    document.body.appendChild(elem);
+}
