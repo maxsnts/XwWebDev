@@ -150,6 +150,9 @@ function SetHeaderRules()
 //************************************************************************************************************
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) 
 {
+    if (tab.url.startsWith('chrome'))
+        return;
+
     chrome.storage.local.get(
     {
         isActive: []
@@ -176,3 +179,53 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
         }
     });
 });
+
+//************************************************************************************************************
+chrome.webRequest.onErrorOccurred.addListener(function(e) 
+{
+    if (e.tabId == -1)
+        return;
+
+    chrome.storage.local.get(
+    {
+        errors: []
+    }, function(items) 
+    {
+        for (const error of items.errors)
+        {
+            if (e.url.match(error.url) == null)
+                return;
+
+            if(e.error == 'net::ERR_BLOCKED_BY_CLIENT')
+                return;
+
+            if (e.error == 'net::ERR_CACHE_MISS')
+                return;
+
+            if (e.error == 'net::ERR_ABORTED')
+                return;
+
+            //console.log(e);
+
+            //if (e.error == 'net::ERR_ABORTED' && error.notfound == false)
+            //    return;
+
+            if (e.error == 'net::ERR_FAILED' && error.js == false)
+                return;
+
+            console.log(e);
+            
+            const found = e.url.match(error.url);
+            chrome.scripting.executeScript(
+            {
+                target: { tabId: e.tabId },
+                files: ['error.js']
+            });
+            
+            return;
+        }
+    });
+
+    
+
+}, {urls: ["<all_urls>"]});
