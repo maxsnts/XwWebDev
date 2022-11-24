@@ -183,9 +183,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
 //************************************************************************************************************
 chrome.webRequest.onErrorOccurred.addListener(function(e) 
 {
-    if (e.tabId == -1)
-        return;
-
     chrome.storage.local.get(
     {
         errors: []
@@ -214,18 +211,63 @@ chrome.webRequest.onErrorOccurred.addListener(function(e)
                 return;
 
             console.log(e);
-            
-            const found = e.url.match(error.url);
-            chrome.scripting.executeScript(
+
+            if (e.url.match(error.url))
             {
-                target: { tabId: e.tabId },
-                files: ['error.js']
-            });
-            
-            return;
+                ShowError(e.tabId);
+                return;
+            }
         }
     });
+}, {urls: ["<all_urls>"]});
 
-    
+chrome.webRequest.onCompleted.addListener(function(e)
+{
+    if (e.statusCode >= 401)
+    {
+        //console.log(e);
+        chrome.storage.local.get(
+        {
+            errors: []
+        }, function(items) 
+        {
+            for (const error of items.errors)
+            {
+                if (e.url.match(error.url))
+                {
+                    if (e.statusCode == 404 && error.notfound == false)
+                        return;
+
+                    ShowError(e.tabId);
+                    return;
+                }
+            }
+        });
+    }
 
 }, {urls: ["<all_urls>"]});
+
+//************************************************************************************************************
+function ShowError(tabId)
+{
+    if (tabId == -1)
+    {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) 
+        {
+            var tab = tabs[0];
+            chrome.scripting.executeScript(
+            {
+                target: { tabId: tab.id },
+                files: ['error.js']
+            });
+        });
+    }
+    else
+    {
+        chrome.scripting.executeScript(
+        {
+            target: { tabId: tabId },
+            files: ['error.js']
+        });
+    }
+}

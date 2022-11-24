@@ -180,7 +180,7 @@ function AddNewErrorRow(load, js, notfound, url)
     }
     else
     {
-        row.find('.errorurl').val("*");
+        row.find('.errorurl').val(".*");
     }
 
     row.find('input[type=checkbox]').change(ChangeErrorRowData.bind(this, row));
