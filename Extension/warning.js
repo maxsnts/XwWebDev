@@ -1,7 +1,4 @@
-window.addEventListener("load", WindowLoaded);
-
-//************************************************************************************************************
-function WindowLoaded()
+function ShowWarning()
 {
     const elem = document.createElement('div');
     elem.className = '';
@@ -9,3 +6,5 @@ function WindowLoaded()
     elem.innerHTML = 'XwWebDev header modification is ON!'
     document.body.appendChild(elem);
 }
+
+window.addEventListener("load", ShowWarning);
