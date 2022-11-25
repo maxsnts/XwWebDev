@@ -153,31 +153,29 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
     if (tab.url.startsWith('chrome'))
         return;
 
-    chrome.storage.local.get(
-    {
-        isActive: []
-    }, function(item) 
-    {
-        if (item.isActive === true)
+    //console.log(changeInfo);
+    if(changeInfo.status == "loading" && tab.status == "loading") 
+    { 
+        //console.log(tab);
+        chrome.storage.local.get(
         {
-            //console.log(tab);
-            if(changeInfo.status == "loading") 
-            { 
-                chrome.declarativeNetRequest.testMatchOutcome({url: tab.url, type: 'main_frame', tabId: tabId}, function(result)
+            headers: []
+        }, function(items) 
+        {
+            for (const header of items.headers)
+            {
+                if (header.active)
                 {
-                    //console.log(result);
-                    if (result.matchedRules.length > 0)
+                    if (tab.url.match(header.url))
                     {
-                        chrome.scripting.executeScript(
-                        {
-                            target: { tabId: tab.id },
-                            files: ['warning.js']
-                        });
+                        RunScript(tabId, 'warning');
+                        return;
                     }
-                });
+                }
             }
-        }
-    });
+        });
+
+    }
 });
 
 //************************************************************************************************************
@@ -214,13 +212,14 @@ chrome.webRequest.onErrorOccurred.addListener(function(e)
 
             if (e.url.match(error.url))
             {
-                ShowError(e.tabId);
+                RunScript(e.tabId, 'error');
                 return;
             }
         }
     });
 }, {urls: ["<all_urls>"]});
 
+//************************************************************************************************************
 chrome.webRequest.onCompleted.addListener(function(e)
 {
     if (e.statusCode >= 401)
@@ -238,7 +237,7 @@ chrome.webRequest.onCompleted.addListener(function(e)
                     if (e.statusCode == 404 && error.notfound == false)
                         return;
 
-                    ShowError(e.tabId);
+                        RunScript(e.tabId, 'error');
                     return;
                 }
             }
@@ -248,7 +247,7 @@ chrome.webRequest.onCompleted.addListener(function(e)
 }, {urls: ["<all_urls>"]});
 
 //************************************************************************************************************
-function ShowError(tabId)
+function RunScript(tabId, script)
 {
     if (tabId == -1)
     {
@@ -258,7 +257,7 @@ function ShowError(tabId)
             chrome.scripting.executeScript(
             {
                 target: { tabId: tab.id },
-                files: ['error.js']
+                files: [`${script}.js`]
             });
         });
     }
@@ -267,7 +266,7 @@ function ShowError(tabId)
         chrome.scripting.executeScript(
         {
             target: { tabId: tabId },
-            files: ['error.js']
+            files: [`${script}.js`]
         });
     }
 }
