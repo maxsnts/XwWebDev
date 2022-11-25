@@ -27,7 +27,7 @@ function LoadOptions()
         {
             for (const error of data.errors)
             {
-                AddNewErrorRow(true, error.js, error.notfound, error.url);
+                AddNewErrorRow(true, error.js, error.notfound, error.other, error.url);
             }
         }
     });
@@ -74,6 +74,7 @@ function SaveOptions(reload)
 
         let js = $(tr).find('.errorjs').is(":checked");
         let notfound = $(tr).find('.errornotfound').is(":checked");
+        let other = $(tr).find('.errorother').is(":checked");
         let url = $(tr).find('.errorurl').text().trim();
 
         if (url == "")
@@ -83,6 +84,7 @@ function SaveOptions(reload)
             index: index,
             js: js,
             notfound: notfound,
+            other: other,
             url: url
         };
         //console.log(header);
@@ -128,11 +130,12 @@ function AddNewHeaderRow(load, active, action, name, value, url)
 }
 
 //************************************************************************************************************
-function AddNewErrorRow(load, js, notfound, url)
+function AddNewErrorRow(load, js, notfound, other, url)
 {
     let row = $(`<tr>
         <td><input class='errorjs' type="checkbox"></td>
         <td><input class='errornotfound' type="checkbox"></td>
+        <td><input class='errorother' type="checkbox"></td>
         <td><span class='errorurl'/></td>
         </tr>`);
     
@@ -140,6 +143,7 @@ function AddNewErrorRow(load, js, notfound, url)
     {
         row.find('.errorjs').prop("checked", js);
         row.find('.errornotfound').prop("checked", notfound);
+        row.find('.errorother').prop("checked", other);
         row.find('.errorurl').text(url);
     }
     

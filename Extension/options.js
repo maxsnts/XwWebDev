@@ -37,7 +37,7 @@ function LoadOptions()
         {
             for (const error of data.errors)
             {
-                AddNewErrorRow(true, error.js, error.notfound, error.url);
+                AddNewErrorRow(true, error.js, error.notfound, error.other , error.url);
             }
         }
         else
@@ -180,11 +180,12 @@ function ChangeHeaderRowData(row)
 }
 
 //************************************************************************************************************
-function AddNewErrorRow(load, js, notfound, url)
+function AddNewErrorRow(load, js, notfound, other, url)
 {
     let row = $(`<tr>
         <td><input class='errorjs' type="checkbox"></td>
         <td><input class='errornotfound' type="checkbox"></td>
+        <td><input class='errorother' type="checkbox"></td>
         <td><input class='errorurl' type="text" style="width: 100%;"></td>
         <td><a href="#">Delete</a></td>
         </tr>`);
@@ -193,6 +194,7 @@ function AddNewErrorRow(load, js, notfound, url)
     {
         row.find('.errorjs').prop("checked", js);
         row.find('.errornotfound').prop("checked", notfound);
+        row.find('.errorother').prop("checked", other);
         row.find('.errorurl').val(url);
     }
     else

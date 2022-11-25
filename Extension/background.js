@@ -4,8 +4,7 @@ chrome.runtime.onInstalled.addListener(() =>
 {
     console.log('XwWebDev installed or loaded!');
     LoadOptions();
-
-    //chrome.runtime.getManifest().update_url
+    InjectScript();
 });
 
 //************************************************************************************************************
@@ -13,6 +12,7 @@ chrome.runtime.onStartup.addListener(() =>
 {
     console.log('Chrome just started: XwWebDev Started!');
     LoadOptions();
+    InjectScript();
 });
 
 //************************************************************************************************************
@@ -161,165 +161,113 @@ function SetHeaderRules()
 }
 
 //************************************************************************************************************
-//inject stuff at the beggining
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) 
-{
-    if (tab.url.startsWith('chrome'))
-        return;
-
-    //console.log(changeInfo);
-    //console.log(tab);
-
-    if(changeInfo.status == "loading" && tab.status == "loading") 
-    { 
-        chrome.storage.local.get( ['headers'], (data) =>
-        {
-            for (const header of data.headers)
-            {
-                if (header.active)
-                {
-                    if (tab.url.match(header.url))
-                    {
-                        RunScript(tabId, 'warning');
-                        return;
-                    }
-                }
-            }
-        });
-
-    }
-});
-
-//************************************************************************************************************
-//catch all errors (may give false positives)
-chrome.webRequest.onErrorOccurred.addListener(function(e) 
-{
-    if (e.url.startsWith('chrome') || e.initiator.startsWith('chrome'))
-        return;
-
-    //console.log(e);
-
-    chrome.storage.local.get( ['errors'], (data) =>
-    {
-        for (const error of data.errors)
-        {
-            if (e.url.match(error.url) == null)
-                return;
-
-            if(e.error == 'net::ERR_BLOCKED_BY_CLIENT')
-                return;
-
-            if (e.error == 'net::ERR_CACHE_MISS')
-                return;
-
-            if (e.error == 'net::ERR_ABORTED')
-                return;
-
-            //console.log(e);
-
-            //if (e.error == 'net::ERR_ABORTED' && error.notfound == false)
-            //    return;
-
-            if (e.error == 'net::ERR_FAILED' && error.js == false)
-                return;
-
-            console.log(e);
-
-            if (e.url.match(error.url))
-            {
-                RunScript(e.tabId, 'error');
-                return;
-            }
-        }
-    });
-}, {urls: ["<all_urls>"]});
-
-//************************************************************************************************************
-chrome.webRequest.onResponseStarted.addListener(function(e)
-{
-    if (e.url.startsWith('chrome'))
-        return;
-
-    if (e.type !== 'main_frame' && e.type !== 'sub_frame')
-        return;    
-
-    //if (e.frameType !== 'outermost_frame' && e.frameType !== 'sub_frame')
-    //    return;
-   
-
-    RunScript(e.tabId, 'error');
-    
-    console.log(`${e.type} ${e.frameType} ${e.url}`);
-    console.log(e);
-
-}, {urls: ["<all_urls>"]});
-
-//************************************************************************************************************
-//catch request at the end and see its return code
 chrome.webRequest.onCompleted.addListener(function(e)
 {
     if (e.url.startsWith('chrome'))
         return;
 
     //console.log(e);
-
-    if (e.statusCode >= 400)
+    chrome.storage.local.get( ['headers', 'errors'], (data) =>
     {
-        RunScript(e.tabId, 'error');
-        //console.log(e);
-        chrome.storage.local.get( ['errors'], (data) =>
+        for (const error of data.errors)
         {
-            for (const error of data.errors)
+            if (e.url.match(error.url))
             {
-                if (e.url.match(error.url))
-                {
-                    if (e.statusCode == 404 && error.notfound == false)
-                        return;
+                if (e.statusCode === 404 && error.notfound == true)
+                    RunScript(e.tabId, 'error');
 
-                        RunScript(e.tabId, 'error');
-                    return;
-                }
+                if (e.statusCode === 400 && error.other == true)
+                    RunScript(e.tabId, 'error');
+
+                if (e.statusCode >= 500 && error.other == true)
+                    RunScript(e.tabId, 'error');
+
+                if (error.js === true)
+                    RunScript(e.tabId, 'errorjs');
             }
-        });
-    }
+        }
+
+        for (const header of data.headers)
+        {
+            if (header.active)
+            {
+                if (e.type != "main_frame")
+                    return;
+
+                console.log(e);
+                
+                if (e.url.match(header.url))
+                    RunScript(e.tabId, 'warning');
+            }
+        }
+    });
 
 }, {urls: ["<all_urls>"]});
 
 //************************************************************************************************************
-function RunScript(tabId, script)
+function InjectScript()
 {
-    console.log(`Inject ${script}.js`);
+    console.log(`Inject js`);
 
     chrome.scripting.registerContentScripts(
     [{ 
         allFrames: false,
-        id: script, 
+        id: "inject", 
         matches: ["<all_urls>"], 
-        js: [`${script}.js`], 
+        js: [`inject.js`], 
         persistAcrossSessions: false, 
         runAt: "document_start",
         world: "MAIN"
     }]);
+}
 
-        /*
+//************************************************************************************************************
+function RunScript(tabId, script)
+{
     if (tabId == -1)
     {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) 
         {
             var tab = tabs[0];
-            chrome.scripting.executeScript(
-            {
-                target: { tabId: tab.id, allFrames: true },
-                files: [`${script}.js`]
-            });
+            Exec(tab.id, script);
         });
     }
     else
     {
+        Exec(tabId, script);
+    }
+}
+
+//************************************************************************************************************
+function Exec(tabId, script)
+{
+    if (script == "errorjs")
+    {
         chrome.scripting.executeScript(
         {
-            target: { tabId: tabId, allFrames: true },
-            files: [`${script}.js`]
+            target: { tabId: tabId},
+            world: "MAIN",
+            func: () => { ShowJsError(); }
         });
-    }*/
+    }
+
+    if (script == "error")
+    {
+        chrome.scripting.executeScript(
+        {
+            target: { tabId: tabId},
+            world: "MAIN",
+            func: () => { ShowError(); }
+        });
+    }
+
+    if (script == "warning")
+    {
+        chrome.scripting.executeScript(
+        {
+            target: { tabId: tabId},
+            world: "MAIN",
+            func: () => { ShowWarning(); }
+        });
+    }
 }
