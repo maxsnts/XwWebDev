@@ -107,6 +107,20 @@ function SetHeaderRules()
                                             { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent} (XwWebDev)` }
                                         ]
                                     },
+                                    "condition": { "urlFilter": header.url}
+                                },
+                                {
+                                    "id": header.index + 100,
+                                    "priority": 1,
+                                    "action":  
+                                    {
+                                        "type": "modifyHeaders",
+                                        "requestHeaders": 
+                                        [
+                                            { "header": header.name, "operation": header.action, "value": header.value },
+                                            { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent} (XwWebDev)` }
+                                        ]
+                                    },
                                     "condition": { "urlFilter": header.url, resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping" , "csp_report", "media" , "websocket", "webtransport", "webbundle", "other"] }
                                 }
                             ]
@@ -121,6 +135,19 @@ function SetHeaderRules()
                             [
                                 {
                                     "id": header.index,
+                                    "priority": 1,
+                                    "action": 
+                                    {
+                                        "type": "modifyHeaders",
+                                        "requestHeaders": 
+                                        [
+                                            { "header": header.name, "operation": header.action }
+                                        ]
+                                    },
+                                    "condition": { "urlFilter": header.url}
+                                },
+                                {
+                                    "id": header.index + 100,
                                     "priority": 1,
                                     "action": 
                                     {

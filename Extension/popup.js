@@ -36,6 +36,7 @@ function LoadOptions()
 }
 
 //************************************************************************************************************
+var saveTimer = 0;
 function SaveOptions(reload)
 {
     let headers = [];
@@ -92,7 +93,11 @@ function SaveOptions(reload)
     {
         if (reload == true)
         {
-            chrome.tabs.reload();
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => 
+            {  
+                chrome.tabs.reload();
+            }, 250);
         }
     });
 }
