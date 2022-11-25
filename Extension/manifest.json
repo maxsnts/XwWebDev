@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "XwWebDev",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "Web Developer tool: Add, change or remove headers on your requests.",
     "background": { "service_worker": "background.js" },
 
