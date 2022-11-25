@@ -11,23 +11,21 @@ function WindowLoaded()
 //************************************************************************************************************
 function LoadOptions()
 {
-    chrome.storage.local.get(
+    console.log('Popup LoadOptions...');
+
+    chrome.storage.local.get( ['headers', 'errors'], (data) =>
     {
-        headers: [],
-        errors: [],
-    }, function(items) 
-    {
-        if (items.headers.length > 0)
+        if (data.headers.length > 0)
         {
-            for (const header of items.headers)
+            for (const header of data.headers)
             {
                 AddNewHeaderRow(true, header.active, header.action, header.name, header.value, header.url);
             }
         }
 
-        if (items.errors.length > 0)
+        if (data.errors.length > 0)
         {
-            for (const error of items.errors)
+            for (const error of data.errors)
             {
                 AddNewErrorRow(true, error.js, error.notfound, error.url);
             }
@@ -39,6 +37,8 @@ function LoadOptions()
 var saveTimer = 0;
 function SaveOptions(reload)
 {
+    console.log('Popup SaveOptions...');
+
     let headers = [];
     $("#HeaderTable tr").each((index, tr) =>
     {
@@ -89,7 +89,7 @@ function SaveOptions(reload)
         errors.push(error);
     });
   
-    chrome.storage.local.set({ headers, errors } , () => 
+    chrome.storage.local.set({ headers: headers, errors: errors } , () => 
     {
         if (reload == true)
         {
@@ -124,7 +124,7 @@ function AddNewHeaderRow(load, active, action, name, value, url)
 
     row.find('input[type=checkbox]').change(SaveAndReload.bind(this));
     $('#HeaderTable').append(row); 
-    SaveOptions(false);  
+    //SaveOptions(false);  
 }
 
 //************************************************************************************************************
@@ -145,7 +145,7 @@ function AddNewErrorRow(load, js, notfound, url)
     
     row.find('input[type=checkbox]').change(SaveAndReload.bind(this));
     $('#ErrorTable').append(row); 
-    SaveOptions(false);  
+    //SaveOptions(false);  
 }
 
 //************************************************************************************************************

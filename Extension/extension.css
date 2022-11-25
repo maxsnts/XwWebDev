@@ -13,6 +13,8 @@ hr 			{ border: 0px;background-color:#AAAAAA; height:3px;margin-left: 0px; margi
 a           {color: cornflowerblue ; text-decoration: none}
 a.hover     {color: cornflowerblue}
 
+#addUserAgent { vertical-align: middle; position: relative; bottom: 1px; left: -3px}
+
 .content {
     margin: auto;
     width: 1000px;

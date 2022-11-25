@@ -1,5 +1,3 @@
-console.log("---- XwWebDev warning.js loaded ----")
-
 window.addEventListener("load", ShowWarning);
 
 function ShowWarning()

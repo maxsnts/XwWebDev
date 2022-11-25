@@ -3,27 +3,25 @@ window.addEventListener("load", WindowLoaded);
 //************************************************************************************************************
 function WindowLoaded()
 {
-    console.log("Forground Open Options...");
     $("#NewHeaderRow").on("click",  AddNewHeaderRow.bind(false));
     $("#NewErrorRow").on("click",  AddNewErrorRow.bind(false));
-
+    $("#resetall").on("click",  ResetAllSettings.bind(false));
+    $("#addUserAgent").change(SaveOptions.bind(this));
     LoadOptions();
 }
 
 //************************************************************************************************************
 function LoadOptions()
 {
-    console.log('Forground LoadOptions...');
+    console.log('Options LoadOptions...');
     
-    chrome.storage.local.get(
+    chrome.storage.local.get( ['headers', 'errors', 'settings'], (data) =>
     {
-        headers: [],
-        errors: [],
-    }, function(items) 
-    {
-        if (items.headers.length > 0)
+        if (data.headers === undefined)
+            data.headers = [];
+        if (data.headers.length > 0)
         {
-            for (const header of items.headers)
+            for (const header of data.headers)
             {
                 AddNewHeaderRow(true, header.active, header.action, header.name, header.value, header.url);
             }
@@ -33,9 +31,11 @@ function LoadOptions()
             AddNewHeaderRow(false);
         }
 
-        if (items.errors.length > 0)
+        if (data.errors === undefined)
+            data.errors = [];
+        if (data.errors.length > 0)
         {
-            for (const error of items.errors)
+            for (const error of data.errors)
             {
                 AddNewErrorRow(true, error.js, error.notfound, error.url);
             }
@@ -44,6 +44,17 @@ function LoadOptions()
         {
             AddNewErrorRow(false);
         }
+
+        if (data.settings === undefined)
+            data.settings = {};
+
+        if (data.settings.adduseragent === undefined)
+        {
+            $("#addUserAgent").prop("checked", true);
+            SaveOptions();
+        }
+        else
+            $("#addUserAgent").prop("checked", data.settings.adduseragent);
     });
 }
 
@@ -51,6 +62,8 @@ function LoadOptions()
 var saveTimer = 0;
 function SaveOptions()
 {
+    console.log('Options SaveOptions...');
+
     let headers = [];
     $("#HeaderTable tr").each((index, tr) =>
     {
@@ -101,11 +114,13 @@ function SaveOptions()
         errors.push(error);
     });
 
+    let settings = {};
+    settings.adduseragent = $("#addUserAgent").is(":checked");
+
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => 
     {  
-        console.log('Forground SaveOptions...');
-        chrome.storage.local.set({ headers, errors } , () => {});
+        chrome.storage.local.set({ headers: headers, errors: errors, settings: settings } , () => {});
     }, 250);
 }
 
@@ -148,7 +163,9 @@ function AddNewHeaderRow(load, active, action, name, value, url)
     row.find('a').on("click",DeleteRow.bind(this, row));
 
     $('#HeaderTable').append(row); 
-    SaveOptions();  
+    
+    if (load !== true)
+        SaveOptions();  
 }
 
 //************************************************************************************************************
@@ -188,7 +205,9 @@ function AddNewErrorRow(load, js, notfound, url)
     row.find('a').on("click",DeleteRow.bind(this, row));
 
     $('#ErrorTable').append(row); 
-    SaveOptions();  
+    
+    if (load !== true)
+        SaveOptions();  
 }
 
 //************************************************************************************************************
@@ -202,6 +221,21 @@ function DeleteRow(row)
 {
     $(row).remove();
     SaveOptions();
+}
+
+//************************************************************************************************************
+function ResetAllSettings()
+{
+    if (confirm("Are you sure?"))
+    {
+        chrome.storage.local.clear(() => 
+        {
+            chrome.storage.local.set({ headers: [], errors: [], settings: {} } , () => 
+            {
+                chrome.tabs.reload();
+            });
+        });
+    }
 }
 
 
