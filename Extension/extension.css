@@ -6,7 +6,7 @@ html        { overflow: -moz-scrollbars-vertical; margin-top: 10px; color:#55555
                 user-select:none;
                 -o-user-select:none;}
 
-                body		{ font:13px Verdana,Tahoma,Helvetica; background-color:#DDDDDD; }
+body		{ font:13px Verdana,Tahoma,Helvetica; background-color:#DDDDDD; }
 table		{ font:13px Verdana,Tahoma,Helvetica; color:#555555;margin: auto; width: 100% }
 hr 			{ border: 0px;background-color:#AAAAAA; height:3px;margin-left: 0px; margin-right: 0px; }
 
@@ -53,4 +53,8 @@ a.hover     {color: cornflowerblue}
     border-width: 1px;
     padding-top: 1px;
     padding-bottom: 1px;
+}
+
+.popup {
+    width: 500px;
 }

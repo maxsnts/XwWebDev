@@ -15,12 +15,6 @@ chrome.runtime.onStartup.addListener(() =>
 });
 
 //************************************************************************************************************
-chrome.action.onClicked.addListener((tab) =>
-{
-    chrome.runtime.openOptionsPage();
-});
-
-//************************************************************************************************************
 chrome.storage.onChanged.addListener(function (changes, namespace) 
 {
     if (changes.headers)

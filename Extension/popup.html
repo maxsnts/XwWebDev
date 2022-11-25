@@ -1,0 +1,40 @@
+<html style="margin-top:0px">
+    <head>
+        <title>XwWebDev</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="extension.css" />
+        <script src='jquery-3.6.0.min.js'></script>
+        <script src='popup.js'></script>
+    </head>
+    <body>
+        <div class="popup">
+            <div style="display: flex; height: 20px">
+                <div style="display: flex; align-items: center;width: 33%;">
+                    <input id="openReload" type="button" value="Reload active tab">
+                </div>
+                <div style="width: 33%;">
+                    <input id="openOptions" type="button" value="Options">
+                </div>
+                <div style="width: 33%;">
+                    <span style="display: flex; align-items: center;font-weight: bold"><img src="images/on16x.png">&nbsp;XwWebDev&nbsp;options</span>
+                </div>
+            </div>
+            <table id="HeaderTable" class="grid" style="text-align: center">
+                <tr>
+                    <th style="width: 50px;">Active</th>
+                    <th style="width: 100px;">Action</th>
+                    <th style="width: 200px;">Header name</th>
+                    <th style="width: 350px;">Header value</th>
+                    <th style="width: 350px;">Apply to URL</th>
+                </tr>
+            </table>
+            <table id="ErrorTable" class="grid" style="text-align: center">
+                <tr>
+                    <th style="width: 50px;">Cacth JS</th>
+                    <th style="width: 50px;">Catch 404</th>
+                    <th style="width: 350px;">Apply to URL</th>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
