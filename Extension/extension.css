@@ -60,3 +60,10 @@ a.hover     {color: cornflowerblue}
 .popup {
     width: 500px;
 }
+
+.handle{
+    position:relative;
+    top: 1px; 
+    opacity: 0.5;
+    margin-right: 4px
+}

@@ -8,6 +8,20 @@ function WindowLoaded()
     $("#resetall").on("click",  ResetAllSettings.bind(false));
     $("#addUserAgent").change(SaveOptions.bind(this));
     LoadOptions();
+
+    let sortOption = 
+    {
+        cursor: "move",
+        deactivate: function( event, ui ) { SaveOptions() },
+        cursorAt: { left: 2, top: 2 },
+        forcePlaceholderSize: true,
+        opacity: 0.6,
+        handle: ".handle",
+        items: 'tr:not(:first)'
+    };
+
+    $('#HeaderTable tbody').sortable(sortOption).disableSelection();
+    $('#ErrorTable tbody').sortable(sortOption).disableSelection();
 }
 
 //************************************************************************************************************
@@ -128,7 +142,10 @@ function SaveOptions()
 function AddNewHeaderRow(load, active, action, name, value, url)
 {
     let row = $(`<tr>
-        <td><input class='hdractive' type="checkbox"></td>
+        <td style='text-align: left'>
+            <img class='handle' src='images/drag.png'/>
+            <input class='hdractive' type="checkbox">
+        </td>
         <td>
             <select class='hdraction' style="width: 100%;">
                 <option value='set' selected>Set</option>
@@ -183,7 +200,10 @@ function ChangeHeaderRowData(row)
 function AddNewErrorRow(load, js, notfound, other, url)
 {
     let row = $(`<tr>
-        <td><input class='errorjs' type="checkbox"></td>
+        <td style='text-align: left'>
+            <img class='handle' src='images/drag.png'/>
+            <input class='errorjs' type="checkbox">
+        </td>
         <td><input class='errornotfound' type="checkbox"></td>
         <td><input class='errorother' type="checkbox"></td>
         <td><input class='errorurl' type="text" style="width: 100%;"></td>
@@ -239,8 +259,6 @@ function ResetAllSettings()
         });
     }
 }
-
-
 
 
 
