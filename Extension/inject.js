@@ -27,10 +27,19 @@ function ShowJsError()
     xwjserrors = false;
 }
 
-function ShowError()
+function Show404Error()
 {
     let xwwebdeverrorelem = document.createElement('div');
     xwwebdeverrorelem.style.cssText = 'z-index:2147483644;background-color:orange;position:fixed;top:0;left:0;right:0;padding:1px;padding-left:10px;font-family:Courier New;font-weight:bold;font-size:14px;line-height:1.0;color:black';
+    xwwebdeverrorelem.innerHTML = ' XwWebDev: Errors 404 found!'
+    document.body.appendChild(xwwebdeverrorelem);
+    xwjserrors = false;
+}
+
+function ShowError()
+{
+    let xwwebdeverrorelem = document.createElement('div');
+    xwwebdeverrorelem.style.cssText = 'z-index:2147483643;background-color:#F7DC6F;position:fixed;top:0;left:0;right:0;padding:1px;padding-left:10px;font-family:Courier New;font-weight:bold;font-size:14px;line-height:1.0;color:black';
     xwwebdeverrorelem.innerHTML = ' XwWebDev: Other Errors found!'
     document.body.appendChild(xwwebdeverrorelem);
 }

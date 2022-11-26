@@ -174,7 +174,7 @@ chrome.webRequest.onCompleted.addListener(function(e)
             if (e.url.match(error.url))
             {
                 if (e.statusCode === 404 && error.notfound == true)
-                    RunScript(e.tabId, 'error');
+                    RunScript(e.tabId, 'error404');
 
                 if (e.statusCode === 400 && error.other == true)
                     RunScript(e.tabId, 'error');
@@ -191,11 +191,9 @@ chrome.webRequest.onCompleted.addListener(function(e)
         {
             if (header.active)
             {
-                if (e.type != "main_frame")
-                    return;
+                //console.log(`${e.type} ${e.frameType} ${e.url}`);
+                //console.log(e);
 
-                console.log(e);
-                
                 if (e.url.match(header.url))
                     RunScript(e.tabId, 'warning');
             }
@@ -248,6 +246,16 @@ function Exec(tabId, script)
             target: { tabId: tabId},
             world: "MAIN",
             func: () => { ShowJsError(); }
+        });
+    }
+
+    if (script == "error404")
+    {
+        chrome.scripting.executeScript(
+        {
+            target: { tabId: tabId},
+            world: "MAIN",
+            func: () => { Show404Error(); }
         });
     }
 
