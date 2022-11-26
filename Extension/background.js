@@ -194,7 +194,12 @@ chrome.webRequest.onCompleted.addListener(function(e)
                 //console.log(`${e.type} ${e.frameType} ${e.url}`);
                 //console.log(e);
 
-                if (e.url.match(header.url))
+                //some compatibility issues between urlFilter and Regex
+                let regex = header.url;
+                if (regex == "*")
+                regex = ".*"
+
+                if (e.url.match(regex))
                     RunScript(e.tabId, 'warning');
             }
         }
