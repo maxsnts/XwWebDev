@@ -27,27 +27,27 @@ function ShowJsError()
     xwjserrors = false;
 }
 
-function Show404Error()
+function Show404Error(extrainfo)
 {
     let xwwebdeverror404 = document.createElement('div');
     xwwebdeverror404.style.cssText = 'z-index:2147483644;background-color:orange;position:fixed;top:0;left:0;right:0;padding:1px;padding-left:10px;font-family:Courier New;font-weight:bold;font-size:14px;line-height:1.0;color:black';
-    xwwebdeverror404.innerHTML = ' XwWebDev: Errors 404 found!'
+    xwwebdeverror404.innerHTML = ` XwWebDev: Errors 404 found! ${extrainfo}`
     document.body.appendChild(xwwebdeverror404);
     xwjserrors = false;
 }
 
-function ShowError()
+function ShowError(extrainfo)
 {
     let xwwebdeverror = document.createElement('div');
     xwwebdeverror.style.cssText = 'z-index:2147483643;background-color:#F7DC6F;position:fixed;top:0;left:0;right:0;padding:1px;padding-left:10px;font-family:Courier New;font-weight:bold;font-size:14px;line-height:1.0;color:black';
-    xwwebdeverror.innerHTML = ' XwWebDev: Other Errors found!'
+    xwwebdeverror.innerHTML = ` XwWebDev: Other Errors found! ${extrainfo}`
     document.body.appendChild(xwwebdeverror);
 }
 
-function ShowWarning()
+function ShowWarning(extrainfo)
 {
     let xwwebdevheader = document.createElement('div');
     xwwebdevheader.style.cssText = 'z-index:2147483640;background-color:violet;position:fixed;top:0;left:0;right:0;padding:1px;padding-left:10px;font-family:Courier New;font-weight:bold;font-size:14px;line-height:1.0;color:black';
-    xwwebdevheader.innerHTML = ' XwWebDev: Header modification is ON!'
+    xwwebdevheader.innerHTML = ` XwWebDev: Header modification is ON! ${extrainfo}`
     document.body.appendChild(xwwebdevheader);
 }

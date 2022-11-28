@@ -160,8 +160,14 @@ function SetHeaderRules()
     });
 }
 
+let warningVisible = false;
+chrome.webNavigation.onCommitted.addListener((details)=>
+{
+    warningVisible = false;
+}, {urls: ["<all_urls>"]});
+
 //************************************************************************************************************
-chrome.webRequest.onCompleted.addListener(function(e)
+chrome.webRequest.onCompleted.addListener((e) =>
 {
     if (e.url.startsWith('chrome'))
         return;
@@ -174,38 +180,52 @@ chrome.webRequest.onCompleted.addListener(function(e)
             if (e.url.match(error.url))
             {
                 if (e.statusCode === 404 && error.notfound == true)
-                    RunScript(e.tabId, 'error404');
+                    RunScript(e.tabId, 'error404', e.url);
 
                 if (e.statusCode === 400 && error.other == true)
-                    RunScript(e.tabId, 'error');
+                    RunScript(e.tabId, 'error', e.url);
 
                 if (e.statusCode >= 500 && error.other == true)
-                    RunScript(e.tabId, 'error');
+                    RunScript(e.tabId, 'error', e.url);
 
                 if (error.js === true)
                     RunScript(e.tabId, 'errorjs');
             }
         }
 
-        for (const header of data.headers)
+        if (warningVisible === true)
+            return;
+
+        if (e.type == "main_frame" || e.type == "sub_frame" || e.type == "xmlhttprequest")
         {
-            if (header.active)
+            for (const header of data.headers)
             {
-                //console.log(`${e.type} ${e.frameType} ${e.url}`);
-                //console.log(e);
+                if (header.active)
+                {
+                    //some compatibility issues between urlFilter and Regex
+                    let regex = header.url;
+                    if (regex == "*")
+                    regex = ".*"
 
-                //some compatibility issues between urlFilter and Regex
-                let regex = header.url;
-                if (regex == "*")
-                regex = ".*"
+                    if (e.url.match(regex))
+                    {
+                        //console.log(`${e.type} ${e.frameType} ${e.url}`);
+                        //console.log(e);
+                        warningVisible = true;
 
-                if (e.url.match(regex))
-                    RunScript(e.tabId, 'warning');
+                        let extrainfo = "";
+                        let server = e.responseHeaders.find(h => h.name == 'x-server');
+                        if (server)
+                            extrainfo = ` (x-server:${server.value})`;
+
+                        RunScript(e.tabId, 'warning', extrainfo);
+                    }
+                }
             }
         }
     });
 
-}, {urls: ["<all_urls>"]});
+}, {urls: ["<all_urls>"]}, ["responseHeaders"]);
 
 //************************************************************************************************************
 function InjectScript()
@@ -225,24 +245,24 @@ function InjectScript()
 }
 
 //************************************************************************************************************
-function RunScript(tabId, script)
+function RunScript(tabId, script, info)
 {
     if (tabId == -1)
     {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) 
         {
             var tab = tabs[0];
-            Exec(tab.id, script);
+            Exec(tab.id, script, info);
         });
     }
     else
     {
-        Exec(tabId, script);
+        Exec(tabId, script, info);
     }
 }
 
 //************************************************************************************************************
-function Exec(tabId, script)
+function Exec(tabId, script, info)
 {
     if (script == "errorjs")
     {
@@ -260,7 +280,8 @@ function Exec(tabId, script)
         {
             target: { tabId: tabId},
             world: "MAIN",
-            func: () => { Show404Error(); }
+            func: (inf) => { Show404Error(inf); },
+            args: [info]
         });
     }
 
@@ -270,7 +291,8 @@ function Exec(tabId, script)
         {
             target: { tabId: tabId},
             world: "MAIN",
-            func: () => { ShowError(); }
+            func: (inf) => { ShowError(inf); },
+            args: [info]
         });
     }
 
@@ -280,7 +302,9 @@ function Exec(tabId, script)
         {
             target: { tabId: tabId},
             world: "MAIN",
-            func: () => { ShowWarning(); }
+            func: (inf) => { ShowWarning(inf); },
+            args: [info]
         });
     }
 }
+
