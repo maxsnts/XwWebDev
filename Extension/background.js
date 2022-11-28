@@ -95,7 +95,9 @@ function SetHeaderRules()
                                             "requestHeaders": 
                                             [
                                                 { "header": header.name, "operation": header.action, "value": header.value },
-                                                { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` }
+                                                { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` },
+                                                { "header": "pragma", "operation": "set", "value": "no-cache" },
+                                                { "header": "cache-control", "operation": "set", "value": "no-cache" }
                                             ]
                                         },
                                         "condition": { "urlFilter": header.url}
@@ -109,7 +111,9 @@ function SetHeaderRules()
                                             "requestHeaders": 
                                             [
                                                 { "header": header.name, "operation": header.action, "value": header.value },
-                                                { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` }
+                                                { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` },
+                                                { "header": "pragma", "operation": "set", "value": "no-cache" },
+                                                { "header": "cache-control", "operation": "set", "value": "no-cache" }
                                             ]
                                         },
                                         "condition": { "urlFilter": header.url, resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping" , "csp_report", "media" , "websocket", "webtransport", "webbundle", "other"] }
@@ -167,9 +171,9 @@ chrome.webNavigation.onCommitted.addListener((details)=>
 }, {urls: ["<all_urls>"]});
 
 //************************************************************************************************************
-chrome.webRequest.onCompleted.addListener((e) =>
+chrome.webRequest.onCompleted.addListener((details) =>
 {
-    if (e.url.startsWith('chrome'))
+    if (details.url.startsWith('chrome'))
         return;
 
     //console.log(e);
@@ -177,26 +181,26 @@ chrome.webRequest.onCompleted.addListener((e) =>
     {
         for (const error of data.errors)
         {
-            if (e.url.match(error.url))
+            if (details.url.match(error.url))
             {
-                if (e.statusCode === 404 && error.notfound == true)
-                    RunScript(e.tabId, 'error404', e.url);
+                if (details.statusCode === 404 && error.notfound == true)
+                    RunScript(details.tabId, 'error404', details.url);
 
-                if (e.statusCode === 400 && error.other == true)
-                    RunScript(e.tabId, 'error', e.url);
+                if (details.statusCode === 400 && error.other == true)
+                    RunScript(details.tabId, 'error', details.url);
 
-                if (e.statusCode >= 500 && error.other == true)
-                    RunScript(e.tabId, 'error', e.url);
+                if (details.statusCode >= 500 && error.other == true)
+                    RunScript(details.tabId, 'error', details.url);
 
                 if (error.js === true)
-                    RunScript(e.tabId, 'errorjs');
+                    RunScript(details.tabId, 'errorjs');
             }
         }
 
         if (warningVisible === true)
             return;
 
-        if (e.type == "main_frame" || e.type == "sub_frame" || e.type == "xmlhttprequest")
+        if (details.type == "main_frame" || details.type == "sub_frame" || details.type == "xmlhttprequest")
         {
             for (const header of data.headers)
             {
@@ -207,18 +211,24 @@ chrome.webRequest.onCompleted.addListener((e) =>
                     if (regex == "*")
                     regex = ".*"
 
-                    if (e.url.match(regex))
+                    if (details.url.match(regex))
                     {
+                        if (details.fromCache === true)
+                        {
+                            console.log("XwWebDev:", "fromCache but it should not");
+                            console.log(details);
+                        }
+
                         //console.log(`${e.type} ${e.frameType} ${e.url}`);
                         //console.log(e);
                         warningVisible = true;
 
                         let extrainfo = "";
-                        let server = e.responseHeaders.find(h => h.name == 'x-server');
+                        let server = details.responseHeaders.find(h => h.name == 'x-server');
                         if (server)
                             extrainfo = ` (x-server:${server.value})`;
 
-                        RunScript(e.tabId, 'warning', extrainfo);
+                        RunScript(details.tabId, 'warning', extrainfo);
                     }
                 }
             }
