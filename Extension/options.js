@@ -113,6 +113,7 @@ function SaveOptions()
 
         let js = $(tr).find('.errorjs').is(":checked");
         let notfound = $(tr).find('.errornotfound').is(":checked");
+        let other = $(tr).find('.errorother').is(":checked");
         let url = $(tr).find('.errorurl').val().trim();
 
         if (url == "")
@@ -122,6 +123,7 @@ function SaveOptions()
             index: index,
             js: js,
             notfound: notfound,
+            other: other,
             url: url
         };
         //console.log(header);
