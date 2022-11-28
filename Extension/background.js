@@ -16,7 +16,7 @@ chrome.runtime.onStartup.addListener(() =>
 });
 
 //************************************************************************************************************
-chrome.storage.onChanged.addListener(function (changes, namespace) 
+chrome.storage.onChanged.addListener((changes, namespace) =>
 {
     LoadOptions();
 });
@@ -32,7 +32,7 @@ function SetHeaderRules()
 {
     console.log("Background SetHeaderRules...");
     
-    chrome.storage.local.get( ['headers', 'settings'], (data) =>
+    chrome.storage.local.get( ['headers', 'settings', 'reload'], (data) =>
     {
         chrome.declarativeNetRequest.getDynamicRules((headers) => 
         {
@@ -57,6 +57,9 @@ function SetHeaderRules()
                     }
                 }, () => 
                 {
+                    if (data.reload == true)
+                        ReloadTab(0);
+                    
                     for (const header of data.headers)
                     {
                         if (header.active !== true)
@@ -76,52 +79,52 @@ function SetHeaderRules()
                             }
                         });
                         
-                        if (header.action == "set")
-                        {
-                            let ua = "";
-                            if (data.settings.adduseragent === true)
-                                ua = " (XwWebDev)";
+                        
+                        let ua = "";
+                        if (data.settings.adduseragent === true)
+                            ua = " (XwWebDev)";
 
-                            chrome.declarativeNetRequest.updateDynamicRules(
-                            {
-                                addRules:
-                                [
+                        chrome.declarativeNetRequest.updateDynamicRules(
+                        {
+                            addRules:
+                            [
+                                {
+                                    "id": header.index,
+                                    "priority": 1,
+                                    "action":  
                                     {
-                                        "id": header.index,
-                                        "priority": 1,
-                                        "action":  
-                                        {
-                                            "type": "modifyHeaders",
-                                            "requestHeaders": 
-                                            [
-                                                { "header": header.name, "operation": header.action, "value": header.value },
-                                                { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` },
-                                                { "header": "pragma", "operation": "set", "value": "no-cache" },
-                                                { "header": "cache-control", "operation": "set", "value": "no-cache" }
-                                            ]
-                                        },
-                                        "condition": { "urlFilter": header.url}
+                                        "type": "modifyHeaders",
+                                        "requestHeaders": 
+                                        [
+                                            { "header": header.name, "operation": header.action, "value": header.value },
+                                            { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` },
+                                            { "header": "pragma", "operation": "set", "value": "no-cache" },
+                                            { "header": "cache-control", "operation": "set", "value": "no-cache" }
+                                        ]
                                     },
+                                    "condition": { "urlFilter": header.url}
+                                },
+                                {
+                                    "id": header.index + 100,
+                                    "priority": 1,
+                                    "action":  
                                     {
-                                        "id": header.index + 100,
-                                        "priority": 1,
-                                        "action":  
-                                        {
-                                            "type": "modifyHeaders",
-                                            "requestHeaders": 
-                                            [
-                                                { "header": header.name, "operation": header.action, "value": header.value },
-                                                { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` },
-                                                { "header": "pragma", "operation": "set", "value": "no-cache" },
-                                                { "header": "cache-control", "operation": "set", "value": "no-cache" }
-                                            ]
-                                        },
-                                        "condition": { "urlFilter": header.url, resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping" , "csp_report", "media" , "websocket", "webtransport", "webbundle", "other"] }
-                                    }
-                                ]
-                            });
-                        }
-            
+                                        "type": "modifyHeaders",
+                                        "requestHeaders": 
+                                        [
+                                            { "header": header.name, "operation": header.action, "value": header.value },
+                                            { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` },
+                                            { "header": "pragma", "operation": "set", "value": "no-cache" },
+                                            { "header": "cache-control", "operation": "set", "value": "no-cache" }
+                                        ]
+                                    },
+                                    "condition": { "urlFilter": header.url, resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping" , "csp_report", "media" , "websocket", "webtransport", "webbundle", "other"] }
+                                }
+                            ]
+                        });
+                        
+                        
+                        /*
                         if (header.action == "remove")
                         {
                             chrome.declarativeNetRequest.updateDynamicRules(
@@ -136,7 +139,10 @@ function SetHeaderRules()
                                             "type": "modifyHeaders",
                                             "requestHeaders": 
                                             [
-                                                { "header": header.name, "operation": header.action }
+                                                { "header": header.name, "operation": header.action },
+                                                { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` },
+                                                { "header": "pragma", "operation": "set", "value": "no-cache" },
+                                                { "header": "cache-control", "operation": "set", "value": "no-cache" }
                                             ]
                                         },
                                         "condition": { "urlFilter": header.url}
@@ -150,6 +156,9 @@ function SetHeaderRules()
                                             "requestHeaders": 
                                             [
                                                 { "header": header.name, "operation": header.action }
+                                                { "header": "User-Agent", "operation": "set", "value": `${navigator.userAgent}${ua}` },
+                                                { "header": "pragma", "operation": "set", "value": "no-cache" },
+                                                { "header": "cache-control", "operation": "set", "value": "no-cache" }
                                             ]
                                         },
                                         "condition": { "urlFilter": header.url, resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping" , "csp_report", "media" , "websocket", "webtransport", "webbundle", "other"] }
@@ -157,13 +166,34 @@ function SetHeaderRules()
                                 ]
                             });
                         }
+                        */
                     }
+
+                    if (data.reload == true)
+                        ReloadTab(500);
                 });
             });
         });
     });
 }
 
+//************************************************************************************************************
+var reloadTimer = 0;
+function ReloadTab(timeout)
+{
+    clearTimeout(reloadTimer);
+    reloadTimer = setTimeout(() => 
+    {  
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) 
+        {
+            var tab = tabs[0];
+            chrome.tabs.reload(tab.id, {bypassCache: true});
+        });
+        
+    }, timeout);
+}
+
+//************************************************************************************************************
 let warningVisible = false;
 chrome.webNavigation.onCommitted.addListener((details)=>
 {
@@ -176,7 +206,7 @@ chrome.webRequest.onCompleted.addListener((details) =>
     if (details.url.startsWith('chrome'))
         return;
 
-    //console.log(e);
+    //console.log(details);
     chrome.storage.local.get( ['headers', 'errors'], (data) =>
     {
         for (const error of data.errors)
@@ -200,7 +230,10 @@ chrome.webRequest.onCompleted.addListener((details) =>
         if (warningVisible === true)
             return;
 
-        if (details.type == "main_frame" || details.type == "sub_frame" || details.type == "xmlhttprequest")
+        if (details.type == "main_frame" || 
+            details.type == "sub_frame" || 
+            details.type == "script" || 
+            details.type == "xmlhttprequest")
         {
             for (const header of data.headers)
             {
@@ -219,8 +252,8 @@ chrome.webRequest.onCompleted.addListener((details) =>
                             console.log(details);
                         }
 
-                        //console.log(`${e.type} ${e.frameType} ${e.url}`);
-                        //console.log(e);
+                        //console.log(`${details.type} ${details.frameType} ${details.url}`);
+                        console.log(details);
                         warningVisible = true;
 
                         let extrainfo = "";

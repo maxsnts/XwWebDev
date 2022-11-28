@@ -91,7 +91,8 @@ function SaveOptions(reload)
         errors.push(error);
     });
   
-    chrome.storage.local.set({ headers: headers, errors: errors } , () => 
+    chrome.storage.local.set({ headers: headers, errors: errors, reload: reload });
+    /* , () => 
     {
         if (reload == true)
         {
@@ -99,9 +100,10 @@ function SaveOptions(reload)
             saveTimer = setTimeout(() => 
             {  
                 chrome.tabs.reload();
-            }, 250);
+            }, 5000);
         }
     });
+    */
 }
 
 //************************************************************************************************************
@@ -149,7 +151,6 @@ function AddNewErrorRow(load, js, notfound, other, url)
     
     row.find('input[type=checkbox]').change(SaveAndReload.bind(this));
     $('#ErrorTable').append(row); 
-    //SaveOptions(false);  
 }
 
 //************************************************************************************************************

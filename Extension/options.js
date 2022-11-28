@@ -134,7 +134,7 @@ function SaveOptions()
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => 
     {  
-        chrome.storage.local.set({ headers: headers, errors: errors, settings: settings } , () => {});
+        chrome.storage.local.set({ headers: headers, errors: errors, settings: settings, reload: false } , () => {});
     }, 250);
 }
 
@@ -252,10 +252,7 @@ function ResetAllSettings()
     {
         chrome.storage.local.clear(() => 
         {
-            chrome.storage.local.set({ headers: [], errors: [], settings: {} } , () => 
-            {
-                chrome.tabs.reload();
-            });
+            chrome.storage.local.set({ headers: [], errors: [], settings: {}, reload: true });
         });
     }
 }
