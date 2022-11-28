@@ -5,7 +5,9 @@ function WindowLoaded()
 {
     $("#NewHeaderRow").on("click",  AddNewHeaderRow.bind(false));
     $("#NewErrorRow").on("click",  AddNewErrorRow.bind(false));
-    $("#resetall").on("click",  ResetAllSettings.bind(false));
+    $("#resetsettings").on("click",  ResetSettings.bind(false));
+    $("#importsettings").on("click",  ImportSettings.bind(false));
+    $("#exportsettings").on("click",  ExportSettings.bind(false));
     $("#addUserAgent").change(SaveOptions.bind(this));
     LoadOptions();
 
@@ -22,6 +24,9 @@ function WindowLoaded()
 
     $('#HeaderTable tbody').sortable(sortOption).disableSelection();
     $('#ErrorTable tbody').sortable(sortOption).disableSelection();
+
+    $("#importsettings").hide();
+    $("#exportsettings").hide();
 }
 
 //************************************************************************************************************
@@ -248,7 +253,7 @@ function DeleteRow(row)
 }
 
 //************************************************************************************************************
-function ResetAllSettings()
+function ResetSettings()
 {
     if (confirm("Are you sure?"))
     {
@@ -257,6 +262,27 @@ function ResetAllSettings()
             chrome.storage.local.set({ headers: [], errors: [], settings: {}, reload: true });
         });
     }
+}
+
+//************************************************************************************************************
+function ImportSettings()
+{
+    if (confirm("Are you sure?"))
+    {
+        chrome.storage.local.clear(() => 
+        {
+            chrome.storage.local.set({ headers: [], errors: [], settings: {}, reload: true });
+        });
+    }
+}
+
+//************************************************************************************************************
+function ExportSettings()
+{
+    chrome.storage.local.get( ['headers', 'errors', 'settings'], (data) =>
+    {
+        chrome.downloads.download({body: JSON.stringify(data)});
+    });
 }
 
 

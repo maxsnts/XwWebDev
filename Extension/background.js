@@ -32,10 +32,26 @@ function SetHeaderRules()
 {
     console.log("Background SetHeaderRules...");
     
-    chrome.storage.local.get( ['headers', 'settings', 'reload'], (data) =>
+    chrome.storage.local.get( ['headers', 'errors', 'settings', 'reload'], (data) =>
     {
+        let icon = "off";
+        if (data.headers.find(h => h.active === true))
+            icon = "on";
+        else if (data.errors.find(e => (e.js === true || e.notfound === true || e.other === true)))
+            icon = "er";
+
+        chrome.action.setIcon({
+            path: {
+                "16": `/images/${icon}16x.png`,
+                "32": `/images/${icon}32x.png`,
+                "48": `/images/${icon}48x.png`,
+                "128": `/images/${icon}128x.png`
+            }
+        });
+
         chrome.declarativeNetRequest.getDynamicRules((headers) => 
         {
+            /*
             chrome.action.setIcon(
             {
                 path: {
@@ -44,8 +60,8 @@ function SetHeaderRules()
                     "48": "/images/off48x.png",
                     "128": "/images/off128x.png"
                 }
-            }, () => 
-            {
+            }, () => */
+            //{
                 let ua = "";
                 if (data.settings.adduseragent === true)
                     ua = " (XwWebDev)";
@@ -125,7 +141,7 @@ function SetHeaderRules()
                         ReloadTab(250);
                     }
                 });
-            });
+            //});
         });
     });
 }
