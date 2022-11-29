@@ -271,19 +271,35 @@ function ResetSettings()
 }
 
 //************************************************************************************************************
-function ImportSettings()
+async function ImportSettings()
 {
-    if (confirm("Are you sure?"))
+    if (confirm("Are you sure you want replace current settings?"))
     {
+        let content = await GetFile();
         chrome.storage.local.clear(() => 
         {
-            chrome.storage.local.set({ headers: [], errors: [], settings: {}, reload: true });
+            chrome.storage.local.set(JSON.parse(content), () => { chrome.tabs.reload();} );
         });
     }
 }
 
 //************************************************************************************************************
- function ExportSettings()
+async function GetFile()
+{
+    let [handle] = await window.showOpenFilePicker({types: [{
+        description: 'Json files',
+        accept: { 'application/json': ['.json']}
+      }],
+      excludeAcceptAllOption: true,
+      multiple: false
+    });
+
+    const file = await handle.getFile();
+    return await file.text();
+}
+
+//************************************************************************************************************
+function ExportSettings()
 {
     chrome.storage.local.get( ['headers', 'errors', 'settings'], (data) =>
     {
@@ -299,6 +315,8 @@ async function WriteFile(filename, data)
     file.write(data);
     file.close();
 }
+
+
 
 
 
