@@ -3,6 +3,12 @@ window.addEventListener("load", WindowLoaded);
 //************************************************************************************************************
 function WindowLoaded()
 {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) 
+    {
+        var tab = tabs[0];
+        console.log(tab.url);
+    });
+
     $("#NewHeaderRow").on("click",  AddNewHeaderRow.bind(false));
     $("#NewErrorRow").on("click",  AddNewErrorRow.bind(false));
     $("#resetsettings").on("click",  ResetSettings.bind(false));
@@ -25,8 +31,8 @@ function WindowLoaded()
     $('#HeaderTable tbody').sortable(sortOption).disableSelection();
     $('#ErrorTable tbody').sortable(sortOption).disableSelection();
 
-    $("#importsettings").hide();
-    $("#exportsettings").hide();
+    //$("#importsettings").hide();
+    //$("#exportsettings").hide();
 }
 
 //************************************************************************************************************
@@ -277,12 +283,21 @@ function ImportSettings()
 }
 
 //************************************************************************************************************
-function ExportSettings()
+ function ExportSettings()
 {
     chrome.storage.local.get( ['headers', 'errors', 'settings'], (data) =>
     {
-        chrome.downloads.download({body: JSON.stringify(data)});
+        WriteFile("xwwebdev-settings.json", JSON.stringify(data, null, 4));
     });
+}
+
+//************************************************************************************************************
+async function WriteFile(filename, data)
+{
+    let handle = await window.showSaveFilePicker({suggestedName: filename});
+    const file = await handle.createWritable();
+    file.write(data);
+    file.close();
 }
 
 

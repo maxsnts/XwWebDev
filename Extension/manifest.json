@@ -5,7 +5,7 @@
     "description": "Web Developer tool: Add, change or remove headers on your requests.",
     "background": { "service_worker": "background.js" },
 
-    "permissions": [ "storage", "tabs", "declarativeNetRequest", "scripting", "webRequest", "webNavigation"],
+    "permissions": [ "storage", "tabs", "declarativeNetRequest", "scripting", "webRequest", "webNavigation", "downloads"],
     "host_permissions": ["*://*/*",  "<all_urls>"],
     
     "options_ui": 
