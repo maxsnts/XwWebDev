@@ -102,7 +102,7 @@ function SaveOptions()
         let url = $(tr).find('.hdrurl').val().trim();
 
         if (url == "")
-            url = "*";
+            url = ".*";
 
         let header = { 
             index: index,
@@ -184,7 +184,7 @@ function AddNewHeaderRow(load, active, action, name, value, url)
     }
     else
     {
-        row.find('.hdrurl').val("*");
+        row.find('.hdrurl').val(".*");
     }
 
     row.find('input[type=checkbox]').change(ChangeHeaderRowData.bind(this, row));

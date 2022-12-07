@@ -93,7 +93,7 @@ function SetHeaderRules()
                                 { "header": "cache-control", "operation": "set", "value": "no-cache" }
                             ]
                         },
-                        "condition": { "urlFilter": header.url}
+                        "condition": { "regexFilter": header.url}
                     }
 
                     rule =  {
@@ -110,7 +110,7 @@ function SetHeaderRules()
                                 { "header": "cache-control", "operation": "set", "value": "no-cache" }
                             ]
                         },
-                        "condition": { "urlFilter": header.url, resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping" , "csp_report", "media" , "websocket", "webtransport", "webbundle", "other"] }
+                        "condition": { "regexFilter": header.url, resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping" , "csp_report", "media" , "websocket", "webtransport", "webbundle", "other"] }
                     }
 
                     addrules.push(rule);
@@ -202,11 +202,11 @@ chrome.webRequest.onCompleted.addListener((details) =>
                 if (header.active)
                 {
                     //some compatibility issues between urlFilter and Regex
-                    let regex = header.url;
-                    if (regex == "*")
-                    regex = ".*"
+                    //let regex = header.url;
+                    //if (regex == "*")
+                    //regex = ".*"
 
-                    if (details.url.match(regex))
+                    if (details.url.match(header.url))
                     {
                         if (details.fromCache === true)
                         {
